@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Union Budget Analysis | Enterprise Analytics</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Professional Palette */
+            --bg-body: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --primary: #2563EB; /* Royal Blue */
+            --text-main: #0F172A; /* Slate 900 */
+            --text-muted: #64748B; /* Slate 500 */
+            --border-light: #E2E8F0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --radius: 12px;
+            --nav-height: 64px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Navigation --- */
+        .navbar {
+            height: var(--nav-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-main);
+        }
+
+        .brand i {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        /* --- Main Layout --- */
+        .main-container {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1600px; /* Ultra wide for dashboards */
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* --- Header Section --- */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .header-actions .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border-light);
+            background: white;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        .header-actions .btn:hover {
+            background: var(--bg-body);
+        }
+
+        /* --- Metric Cards (Optional Context) --- */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .metric-trend {
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .trend-up { color: #10B981; }
+        .trend-neutral { color: #64748B; }
+
+        /* --- Dashboard Container --- */
+        .dashboard-wrapper {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            /* Flex grow ensures it fills vertical space */
+            flex: 1; 
+            min-height: 800px; /* Minimum height for Tableau */
+            position: relative;
+            padding: 1rem;
+        }
+
+        /* Tableau Embed Responsive Hack */
+        .tableauPlaceholder {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-light);
+            background: var(--bg-card);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 1rem; }
+            .nav-links { display: none; } /* Hide for simplicity in this demo */
+            .main-container { padding: 1rem; }
+            .dashboard-wrapper { min-height: 500px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>BudgetAnalytics</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active">Overview</a>
+            <a href="#">Sector Analysis</a>
+            <a href="#">Trends</a>
+            <a href="#">About Project</a>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        
+        <header class="page-header">
+            <div class="header-title">
+                <h1>Union Budget Analysis</h1>
+                <p>Fiscal Year Allocation & Expenditure Insights</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn"><i class="fa-solid fa-download"></i> Export Report</button>
+            </div>
+        </header>
+
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Allocation</div>
+                <div class="metric-value">₹ 45.03 L Cr</div>
+                <div class="metric-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +12% vs LY</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Top Sector</div>
+                <div class="metric-value">Defense</div>
+                <div class="metric-trend trend-neutral">13.2% of Total</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Capex Growth</div>
+                <div class="metric-value">33%</div>
+                <div class="metric-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Significant Increase</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Fiscal Deficit</div>
+                <div class="metric-value">5.9%</div>
+                <div class="metric-trend trend-up">Target GDP</div>
+            </div>
+        </section>
+
+        <section class="dashboard-wrapper">
+           
+<div class='tableauPlaceholder' id='viz1771353108664' style='position: relative'>
+<noscript>
+<a href='#'>
+<img alt='Story 1'
+src='https://public.tableau.com/static/images/TF/TFGBNWMX6/1_rss.png'
+style='border: none' />
+</a>
+</noscript>
+
+<object class='tableauViz' style='display:none;'>
+
+<param name='host_url' value='https://public.tableau.com/' />
+<param name='embed_code_version' value='3' />
+<param name='path' value='shared/TFGBNWMX6' />
+<param name='toolbar' value='yes' />
+
+</object>
+</div>
+
+<script type='text/javascript'>
+var divElement = document.getElementById('viz1771353108664');
+var vizElement = divElement.getElementsByTagName('object')[0];
+vizElement.style.width='100%';
+vizElement.style.height='850px';
+var scriptElement = document.createElement('script');
+scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+vizElement.parentNode.insertBefore(scriptElement, vizElement);
+</script>
+
+</section>
+
+
+            <script type='text/javascript'>
+                var divElement = document.getElementById('viz1708451234567'); // Match ID above
+                var vizElement = divElement.getElementsByTagName('object')[0];
+                
+                // Responsive Logic: Fit to container
+                if ( divElement.offsetWidth > 800 ) { 
+                    vizElement.style.width='100%'; 
+                    vizElement.style.height='850px'; // Set preferred desktop height
+                } else if ( divElement.offsetWidth > 500 ) { 
+                    vizElement.style.width='100%'; 
+                    vizElement.style.height='850px'; 
+                } else { 
+                    vizElement.style.width='100%'; 
+                    vizElement.style.height='1200px'; // Taller for mobile scrolling
+                }
+                
+                var scriptElement = document.createElement('script');
+                scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+                vizElement.parentNode.insertBefore(scriptElement, vizElement);
+            </script>
+
+        </section>
+
+    </main>
+    <section class="about-section" style="margin-top: 2rem; background: var(--bg-card); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+            
+            <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--text-main);">About This Project</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Academic Data Analytics Portfolio Project</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                
+                <div>
+                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-main);"><i class="fa-solid fa-bullseye" style="color: var(--primary); margin-right: 0.5rem;"></i>Project Overview</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+                        This platform provides a visual exploration of India's fiscal allocations. It is designed to transform complex financial data into accessible insights, analyzing sector-wise distribution, expenditure trends, and historical budget shifts.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-main);"><i class="fa-solid fa-database" style="color: var(--primary); margin-right: 0.5rem;"></i>Data & Architecture</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.5rem;">
+                        Data is sourced from official Ministry of Finance publications, cleaned via Python (Pandas), and visualized using Tableau Public.
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                        <span style="background: var(--bg-body); border: 1px solid var(--border-light); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500;">Flask</span>
+                        <span style="background: var(--bg-body); border: 1px solid var(--border-light); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500;">Tableau</span>
+                        <span style="background: var(--bg-body); border: 1px solid var(--border-light); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500;">Python/Pandas</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    <footer class="footer">
+        <p>&copy; 2024 BudgetAnalytics Project. Data sourced from Union Budget of India.</p>
+    </footer>
+
+</body>
+</html>
